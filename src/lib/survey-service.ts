@@ -610,4 +610,82 @@ export const surveyService = {
       return { data: null, error: message }
     }
   },
+
+  // 12. Fetch raw survey data for CSV Export (API.md Section 12)
+  async fetchSurveyRawData(surveyId: string) {
+    try {
+      const { data: survey, error: sErr } = await supabase
+        .from('surveys')
+        .select('*')
+        .eq('id', surveyId)
+        .single()
+
+      if (sErr || !survey) {
+        return { data: null, error: sErr?.message || 'Survey not found.' }
+      }
+
+      const { data: questions, error: qErr } = await supabase
+        .from('questions')
+        .select('*')
+        .eq('survey_id', surveyId)
+        .order('position', { ascending: true })
+
+      if (qErr) {
+        return { data: null, error: qErr.message }
+      }
+
+      const qIds = (questions || []).map((q) => q.id)
+      let choices: Choice[] = []
+      if (qIds.length > 0) {
+        const { data: choicesData, error: cErr } = await supabase
+          .from('choices')
+          .select('*')
+          .in('question_id', qIds)
+          .order('position', { ascending: true })
+
+        if (cErr) {
+          return { data: null, error: cErr.message }
+        }
+        choices = choicesData || []
+      }
+
+      const { data: responses, error: rErr } = await supabase
+        .from('responses')
+        .select('*')
+        .eq('survey_id', surveyId)
+        .order('submitted_at', { ascending: true })
+
+      if (rErr) {
+        return { data: null, error: rErr.message }
+      }
+
+      const rIds = (responses || []).map((r) => r.id)
+      let answers: Answer[] = []
+      if (rIds.length > 0) {
+        const { data: answersData, error: aErr } = await supabase
+          .from('answers')
+          .select('*')
+          .in('response_id', rIds)
+
+        if (aErr) {
+          return { data: null, error: aErr.message }
+        }
+        answers = answersData || []
+      }
+
+      return {
+        data: {
+          survey,
+          questions: questions || [],
+          choices,
+          responses: responses || [],
+          answers,
+        },
+        error: null,
+      }
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Failed to fetch raw survey data.'
+      return { data: null, error: message }
+    }
+  },
 }

@@ -4,6 +4,7 @@ import {
   surveyService,
   type SurveyResultsData,
 } from '../lib/survey-service'
+import { generateSurveyCSV, downloadCSV } from '../lib/csv-export'
 import {
   ResponsiveContainer,
   BarChart,
@@ -73,37 +74,24 @@ export const ResultsPage: React.FC = () => {
     }
   }, [id])
 
-  // Simple browser-side CSV export (API.md Section 12)
-  const handleExportCSV = () => {
-    if (!resultsData) return
+  const [exportingCSV, setExportingCSV] = useState(false)
 
-    const { survey, questions, total_responses } = resultsData
-    let csvContent = `data:text/csv;charset=utf-8,`
+  // Full response-level CSV export matching API.md Section 12 & RFC 4180
+  const handleExportCSV = async () => {
+    if (!id || !resultsData) return
 
-    // Metadata
-    csvContent += `Survey Title,"${survey.title.replace(/"/g, '""')}"\n`
-    csvContent += `Total Responses,${total_responses}\n\n`
+    setExportingCSV(true)
+    const { data: rawData, error: rawErr } = await surveyService.fetchSurveyRawData(id)
+    setExportingCSV(false)
 
-    // Question Breakdown
-    csvContent += `Question Number,Question Prompt,Choice,Votes,Percentage\n`
+    if (rawErr || !rawData) {
+      alert(`Error exporting CSV: ${rawErr || 'Failed to fetch responses.'}`)
+      return
+    }
 
-    questions.forEach((q) => {
-      q.choices.forEach((c) => {
-        csvContent += `${q.position},"${q.question_text.replace(/"/g, '""')}","${c.choice_text.replace(/"/g, '""')}",${c.count},${c.percentage}%\n`
-      })
-      if (q.unanswered_count > 0) {
-        csvContent += `${q.position},"${q.question_text.replace(/"/g, '""')}","[Unanswered / Skipped]",${q.unanswered_count},\n`
-      }
-    })
-
-    const encodedUri = encodeURI(csvContent)
-    const link = document.createElement('a')
-    const safeTitle = survey.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()
-    link.setAttribute('href', encodedUri)
-    link.setAttribute('download', `${safeTitle}_results.csv`)
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
+    const csvString = generateSurveyCSV(rawData)
+    const safeTitle = resultsData.survey.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()
+    downloadCSV(`${safeTitle}_responses.csv`, csvString)
   }
 
   if (loading) {
@@ -180,12 +168,14 @@ export const ResultsPage: React.FC = () => {
 
             <button
               onClick={handleExportCSV}
-              disabled={total_responses === 0}
+              disabled={total_responses === 0 || exportingCSV}
               className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold text-slate-700 bg-white border border-slate-300 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors shadow-2xs"
               title="Export CSV"
             >
-              <Download className="w-4 h-4" />
-              <span className="hidden sm:inline">Export CSV</span>
+              <Download className={`w-4 h-4 ${exportingCSV ? 'animate-bounce' : ''}`} />
+              <span className="hidden sm:inline">
+                {exportingCSV ? 'Exporting...' : 'Export CSV'}
+              </span>
             </button>
           </div>
         </div>
