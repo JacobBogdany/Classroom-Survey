@@ -1,10 +1,13 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { BarChart3, LogIn, QrCode, Sparkles } from 'lucide-react'
+import { BarChart3, LogIn, QrCode, Sparkles, LayoutDashboard } from 'lucide-react'
+import { useAuth } from '../context/useAuth'
 
 const currentYear = new Date().getFullYear()
 
 export const LandingPage: React.FC = () => {
+  const { user } = useAuth()
+
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col justify-between">
       {/* Top Navigation */}
@@ -19,13 +22,23 @@ export const LandingPage: React.FC = () => {
             </span>
           </div>
           <div>
-            <Link
-              to="/login"
-              className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-700 hover:text-indigo-600 transition-colors py-2 px-3 rounded-md hover:bg-slate-100"
-            >
-              <LogIn className="w-4 h-4" />
-              <span>Instructor Login</span>
-            </Link>
+            {user ? (
+              <Link
+                to="/dashboard"
+                className="inline-flex items-center gap-1.5 text-sm font-medium text-indigo-600 hover:text-indigo-700 transition-colors py-2 px-3 rounded-md hover:bg-indigo-50"
+              >
+                <LayoutDashboard className="w-4 h-4" />
+                <span>Dashboard</span>
+              </Link>
+            ) : (
+              <Link
+                to="/login"
+                className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-700 hover:text-indigo-600 transition-colors py-2 px-3 rounded-md hover:bg-slate-100"
+              >
+                <LogIn className="w-4 h-4" />
+                <span>Instructor Login</span>
+              </Link>
+            )}
           </div>
         </div>
       </header>
@@ -47,13 +60,23 @@ export const LandingPage: React.FC = () => {
           </p>
 
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
-            <Link
-              to="/login"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-lg text-base font-semibold text-white bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 transition-all shadow-sm shadow-indigo-200"
-            >
-              <LogIn className="w-4 h-4" />
-              <span>Instructor Login</span>
-            </Link>
+            {user ? (
+              <Link
+                to="/dashboard"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-lg text-base font-semibold text-white bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 transition-all shadow-sm shadow-indigo-200"
+              >
+                <LayoutDashboard className="w-4 h-4" />
+                <span>Go to Dashboard</span>
+              </Link>
+            ) : (
+              <Link
+                to="/login"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-lg text-base font-semibold text-white bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 transition-all shadow-sm shadow-indigo-200"
+              >
+                <LogIn className="w-4 h-4" />
+                <span>Instructor Login</span>
+              </Link>
+            )}
           </div>
 
           {/* Quick value props */}
