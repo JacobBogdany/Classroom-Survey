@@ -21,6 +21,7 @@ import {
   BarChart3,
   ListFilter,
   CheckSquare,
+  Copy,
 } from 'lucide-react'
 
 export const SurveyEditorPage: React.FC = () => {
@@ -355,6 +356,20 @@ export const SurveyEditorPage: React.FC = () => {
     }
   }
 
+  // Handle duplicating current survey (Phase 12)
+  const handleDuplicate = async () => {
+    if (!id) return
+    setSaving(true)
+    setError(null)
+    const { newId, error: dupErr } = await surveyService.duplicateSurvey(id)
+    setSaving(false)
+    if (dupErr || !newId) {
+      setError(dupErr || 'Failed to duplicate survey.')
+    } else {
+      navigate(`/surveys/${newId}/edit`)
+    }
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4">
@@ -388,6 +403,19 @@ export const SurveyEditorPage: React.FC = () => {
           </div>
 
           <div className="flex items-center space-x-2 sm:space-x-3">
+            {isEditing && id && (
+              <button
+                type="button"
+                onClick={handleDuplicate}
+                disabled={saving}
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold text-slate-700 bg-white border border-slate-300 hover:bg-slate-50 transition-colors shadow-2xs disabled:opacity-50"
+                title="Duplicate Survey"
+              >
+                <Copy className="w-4 h-4 text-slate-500" />
+                <span className="hidden sm:inline">Duplicate</span>
+              </button>
+            )}
+
             <button
               onClick={() => handleSave(false)}
               disabled={saving || isActiveSurvey}
@@ -438,15 +466,26 @@ export const SurveyEditorPage: React.FC = () => {
 
         {/* Response count warning if editing existing survey with responses */}
         {responseCount > 0 && !isActiveSurvey && (
-          <div className="mb-6 p-4 rounded-xl bg-blue-50 border border-blue-200 flex items-start gap-3 text-blue-900 shadow-xs">
-            <BarChart3 className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
-            <div className="text-xs text-blue-800">
-              <span className="font-semibold text-blue-900">Historical Responses Note: </span>
-              This survey already has {responseCount} student response
-              {responseCount === 1 ? '' : 's'}. Modifying or removing questions will alter the
-              context of existing answers. To create a fresh version for another class session,
-              consider duplicating instead.
+          <div className="mb-6 p-4 rounded-xl bg-blue-50 border border-blue-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-blue-900 shadow-xs">
+            <div className="flex items-start gap-3">
+              <BarChart3 className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
+              <div className="text-xs text-blue-800">
+                <span className="font-semibold text-blue-900">Historical Responses Note: </span>
+                This survey already has {responseCount} student response
+                {responseCount === 1 ? '' : 's'}. Modifying or removing questions will alter the
+                context of existing answers. To create a fresh version for another class session,
+                consider duplicating instead.
+              </div>
             </div>
+            <button
+              type="button"
+              onClick={handleDuplicate}
+              disabled={saving}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white shrink-0 transition-colors shadow-xs disabled:opacity-50"
+            >
+              <Copy className="w-3.5 h-3.5" />
+              <span>Duplicate Survey</span>
+            </button>
           </div>
         )}
 

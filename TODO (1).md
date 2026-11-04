@@ -175,12 +175,12 @@ This roadmap breaks the implementation into small, testable phases ordered from 
 
 # Phase 12 — Survey Duplication
 
-- [ ] Duplicate survey title and description.
-- [ ] Duplicate questions.
-- [ ] Duplicate answer choices.
-- [ ] Create the copy in Draft state.
-- [ ] Add "Copy of ..." naming.
-- [ ] Redirect to the editor after duplication.
+- [x] Duplicate survey title and description.
+- [x] Duplicate questions.
+- [x] Duplicate answer choices.
+- [x] Create the copy in Draft state.
+- [x] Add "Copy of ..." naming.
+- [x] Redirect to the editor after duplication.
 
 ---
 
