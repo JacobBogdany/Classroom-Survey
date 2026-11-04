@@ -128,26 +128,26 @@ This roadmap breaks the implementation into small, testable phases ordered from 
 
 # Phase 8 — Duplicate Submission Protection
 
-- [ ] Generate an anonymous browser token.
-- [ ] Store the token in local storage.
-- [ ] Save the token with each response.
-- [ ] Prevent the same token from submitting twice to the same survey.
-- [ ] Show a friendly message if a duplicate submission is attempted.
-- [ ] Add a database uniqueness constraint if appropriate.
+- [x] Generate an anonymous browser token.
+- [x] Store the token in local storage.
+- [x] Save the token with each response.
+- [x] Prevent the same token from submitting twice to the same survey.
+- [x] Show a friendly message if a duplicate submission is attempted.
+- [x] Add a database uniqueness constraint if appropriate.
 
 ---
 
 # Phase 9 — Results Dashboard
 
-- [ ] Create a results page for each survey.
-- [ ] Show total response count.
-- [ ] Aggregate answers by question.
-- [ ] Show counts for each choice.
-- [ ] Show percentages for each choice.
-- [ ] Add bar charts using Recharts.
-- [ ] Clearly label unanswered questions.
-- [ ] Add Refresh Results button.
-- [ ] Add link back to the main dashboard.
+- [x] Create a results page for each survey.
+- [x] Show total response count.
+- [x] Aggregate answers by question.
+- [x] Show counts for each choice.
+- [x] Show percentages for each choice.
+- [x] Add bar charts using Recharts.
+- [x] Clearly label unanswered questions.
+- [x] Add Refresh Results button.
+- [x] Add link back to the main dashboard.
 
 ---
 

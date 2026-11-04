@@ -1,5 +1,5 @@
 import React from 'react'
-import { BrowserRouter, Routes, Route, Navigate, useParams } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import { ProtectedRoute } from './components/ProtectedRoute'
 import { LandingPage } from './pages/LandingPage'
@@ -8,32 +8,7 @@ import { DashboardPage } from './pages/DashboardPage'
 import { SurveyEditorPage } from './pages/SurveyEditorPage'
 import { PresentPage } from './pages/PresentPage'
 import { StudentSurveyPage } from './pages/StudentSurveyPage'
-
-// Lightweight placeholder component for upcoming phases
-const PhasePlaceholder: React.FC<{ phaseName: string }> = ({ phaseName }) => {
-  const params = useParams()
-  return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-      <div className="bg-white p-8 rounded-xl shadow-xs border border-slate-200 max-w-md w-full text-center">
-        <h2 className="text-xl font-bold text-slate-900 mb-2">{phaseName}</h2>
-        <p className="text-sm text-slate-600 mb-4">
-          This feature will be fully built in the upcoming phase.
-        </p>
-        {Object.keys(params).length > 0 && (
-          <p className="text-xs font-mono bg-slate-100 p-2 rounded mb-6 text-slate-700">
-            Parameters: {JSON.stringify(params)}
-          </p>
-        )}
-        <a
-          href="/dashboard"
-          className="inline-block text-sm font-semibold text-indigo-600 hover:text-indigo-700"
-        >
-          ← Return to Dashboard
-        </a>
-      </div>
-    </div>
-  )
-}
+import { ResultsPage } from './pages/ResultsPage'
 
 export const App: React.FC = () => {
   return (
@@ -82,7 +57,7 @@ export const App: React.FC = () => {
             path="/surveys/:id/results"
             element={
               <ProtectedRoute>
-                <PhasePlaceholder phaseName="Phase 9: Survey Results & Analytics" />
+                <ResultsPage />
               </ProtectedRoute>
             }
           />

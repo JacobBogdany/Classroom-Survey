@@ -1,5 +1,5 @@
 import { supabase } from './supabase'
-import type { Survey, Question, Choice, QuestionType, SurveyStatus } from '../types/database'
+import type { Survey, Question, Choice, QuestionType, SurveyStatus, Answer } from '../types/database'
 
 export interface SurveyWithCount extends Survey {
   responses?: { count: number }[]
@@ -31,6 +31,30 @@ export interface EditableSurvey {
 export interface SurveyDetail extends Survey {
   questions: (Question & { choices: Choice[] })[]
   response_count: number
+}
+
+export interface ChoiceResult {
+  choice_id: string
+  choice_text: string
+  position: number
+  count: number
+  percentage: number
+}
+
+export interface QuestionResult {
+  question_id: string
+  question_text: string
+  question_type: QuestionType
+  position: number
+  response_count: number
+  unanswered_count: number
+  choices: ChoiceResult[]
+}
+
+export interface SurveyResultsData {
+  survey: Survey
+  total_responses: number
+  questions: QuestionResult[]
 }
 
 export const surveyService = {
@@ -471,6 +495,109 @@ export const surveyService = {
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Submission failed.'
       return { success: false, error: message }
+    }
+  },
+
+  // 11. Fetch aggregated survey results
+  async getSurveyResults(surveyId: string): Promise<{ data: SurveyResultsData | null; error: string | null }> {
+    try {
+      // 1. Fetch survey
+      const { data: survey, error: sErr } = await supabase
+        .from('surveys')
+        .select('*')
+        .eq('id', surveyId)
+        .single()
+
+      if (sErr || !survey) {
+        return { data: null, error: sErr?.message || 'Survey not found.' }
+      }
+
+      // 2. Fetch questions and choices
+      const { data: questions, error: qErr } = await supabase
+        .from('questions')
+        .select('*, choices(*)')
+        .eq('survey_id', surveyId)
+        .order('position', { ascending: true })
+
+      if (qErr) {
+        return { data: null, error: qErr.message }
+      }
+
+      // 3. Fetch all responses for this survey
+      const { data: responses, error: rErr } = await supabase
+        .from('responses')
+        .select('id, submitted_at')
+        .eq('survey_id', surveyId)
+
+      if (rErr) {
+        return { data: null, error: rErr.message }
+      }
+
+      const totalResponses = responses?.length ?? 0
+      const responseIds = (responses || []).map((r) => r.id)
+
+      // 4. Fetch all answers for these responses
+      let answers: Answer[] = []
+      if (responseIds.length > 0) {
+        const { data: answersData, error: aErr } = await supabase
+          .from('answers')
+          .select('*')
+          .in('response_id', responseIds)
+
+        if (aErr) {
+          return { data: null, error: aErr.message }
+        }
+        answers = answersData || []
+      }
+
+      // 5. Aggregate answers by question and choice
+      const aggregatedQuestions: QuestionResult[] = (questions || []).map((q) => {
+        const qAnswers = answers.filter((a) => a.question_id === q.id)
+        const qAnswerCount = qAnswers.length
+        const unansweredCount = Math.max(0, totalResponses - qAnswerCount)
+
+        const sortedChoices = (q.choices || []).sort(
+          (a: Choice, b: Choice) => a.position - b.position
+        )
+
+        const choicesResults: ChoiceResult[] = sortedChoices.map((c: Choice) => {
+          const choiceCount = qAnswers.filter((a) => a.choice_id === c.id).length
+          const percentage =
+            totalResponses > 0
+              ? Math.round((choiceCount / totalResponses) * 1000) / 10
+              : 0
+
+          return {
+            choice_id: c.id,
+            choice_text: c.choice_text,
+            position: c.position,
+            count: choiceCount,
+            percentage,
+          }
+        })
+
+        return {
+          question_id: q.id,
+          question_text: q.question_text,
+          question_type: q.question_type,
+          position: q.position,
+          response_count: qAnswerCount,
+          unanswered_count: unansweredCount,
+          choices: choicesResults,
+        }
+      })
+
+      return {
+        data: {
+          survey,
+          total_responses: totalResponses,
+          questions: aggregatedQuestions,
+        },
+        error: null,
+      }
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Failed to compute survey results.'
+      return { data: null, error: message }
     }
   },
 }
