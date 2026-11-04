@@ -153,11 +153,11 @@ This roadmap breaks the implementation into small, testable phases ordered from 
 
 # Phase 10 — Historical Results
 
-- [ ] Allow viewing results for Closed surveys.
-- [ ] Allow viewing results for Archived surveys.
-- [ ] Add filtering by date.
-- [ ] Add filtering by survey title.
-- [ ] Preserve all historical response data.
+- [x] Allow viewing results for Closed surveys.
+- [x] Allow viewing results for Archived surveys.
+- [x] Add filtering by date.
+- [x] Add filtering by survey title.
+- [x] Preserve all historical response data.
 
 ---
 

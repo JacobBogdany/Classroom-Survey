@@ -54,6 +54,8 @@ export interface QuestionResult {
 export interface SurveyResultsData {
   survey: Survey
   total_responses: number
+  first_response_at?: string | null
+  last_response_at?: string | null
   questions: QuestionResult[]
 }
 
@@ -535,6 +537,12 @@ export const surveyService = {
 
       const totalResponses = responses?.length ?? 0
       const responseIds = (responses || []).map((r) => r.id)
+      const sortedTimestamps = (responses || [])
+        .map((r) => r.submitted_at)
+        .filter(Boolean)
+        .sort()
+      const firstResponseAt = sortedTimestamps[0] || null
+      const lastResponseAt = sortedTimestamps[sortedTimestamps.length - 1] || null
 
       // 4. Fetch all answers for these responses
       let answers: Answer[] = []
@@ -591,6 +599,8 @@ export const surveyService = {
         data: {
           survey,
           total_responses: totalResponses,
+          first_response_at: firstResponseAt,
+          last_response_at: lastResponseAt,
           questions: aggregatedQuestions,
         },
         error: null,

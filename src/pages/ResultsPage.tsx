@@ -213,6 +213,42 @@ export const ResultsPage: React.FC = () => {
             {survey.description && (
               <p className="text-sm text-slate-600 mt-1 max-w-2xl">{survey.description}</p>
             )}
+
+            <div className="flex items-center gap-2.5 text-xs text-slate-500 mt-2 flex-wrap">
+              <span>
+                Created{' '}
+                {new Date(survey.created_at).toLocaleDateString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric',
+                })}
+              </span>
+              {resultsData.first_response_at && (
+                <>
+                  <span>•</span>
+                  <span>
+                    First response:{' '}
+                    {new Date(resultsData.first_response_at).toLocaleString([], {
+                      dateStyle: 'short',
+                      timeStyle: 'short',
+                    })}
+                  </span>
+                </>
+              )}
+              {resultsData.last_response_at &&
+                resultsData.last_response_at !== resultsData.first_response_at && (
+                  <>
+                    <span>•</span>
+                    <span>
+                      Latest:{' '}
+                      {new Date(resultsData.last_response_at).toLocaleString([], {
+                        dateStyle: 'short',
+                        timeStyle: 'short',
+                      })}
+                    </span>
+                  </>
+                )}
+            </div>
           </div>
 
           <div className="inline-flex items-center gap-3 px-5 py-3 rounded-xl bg-indigo-50 border border-indigo-100/80 text-indigo-900 shrink-0">

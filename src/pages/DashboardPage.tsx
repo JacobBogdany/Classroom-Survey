@@ -20,6 +20,8 @@ import {
   User as UserIcon,
   RefreshCw,
   AlertCircle,
+  Calendar,
+  ArrowUpDown,
 } from 'lucide-react'
 
 export const DashboardPage: React.FC = () => {
@@ -34,6 +36,8 @@ export const DashboardPage: React.FC = () => {
   // Filtering & Search
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState<'all' | SurveyStatus>('all')
+  const [dateFilter, setDateFilter] = useState<'all' | 'today' | 'week' | 'month'>('all')
+  const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest')
 
   // Modals state
   const [modalConfig, setModalConfig] = useState<{
@@ -84,16 +88,43 @@ export const DashboardPage: React.FC = () => {
     navigate('/login')
   }
 
-  // Filtered surveys
+  // Filtered & Sorted surveys (Phase 10: Historical Results & Date filtering)
   const filteredSurveys = useMemo(() => {
-    return surveys.filter((survey) => {
-      const matchesSearch =
-        survey.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (survey.description?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false)
-      const matchesStatus = statusFilter === 'all' || survey.status === statusFilter
-      return matchesSearch && matchesStatus
-    })
-  }, [surveys, searchQuery, statusFilter])
+    return surveys
+      .filter((survey) => {
+        const matchesSearch =
+          survey.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          (survey.description?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false)
+
+        const matchesStatus = statusFilter === 'all' || survey.status === statusFilter
+
+        const matchesDate = (() => {
+          if (dateFilter === 'all') return true
+          const created = new Date(survey.created_at).getTime()
+          const now = Date.now()
+          if (dateFilter === 'today') {
+            const todayStart = new Date().setHours(0, 0, 0, 0)
+            return created >= todayStart
+          }
+          if (dateFilter === 'week') {
+            const weekAgo = now - 7 * 24 * 60 * 60 * 1000
+            return created >= weekAgo
+          }
+          if (dateFilter === 'month') {
+            const monthAgo = now - 30 * 24 * 60 * 60 * 1000
+            return created >= monthAgo
+          }
+          return true
+        })()
+
+        return matchesSearch && matchesStatus && matchesDate
+      })
+      .sort((a, b) => {
+        const timeA = new Date(a.created_at).getTime()
+        const timeB = new Date(b.created_at).getTime()
+        return sortOrder === 'newest' ? timeB - timeA : timeA - timeB
+      })
+  }, [surveys, searchQuery, statusFilter, dateFilter, sortOrder])
 
   // Status Badge Helper
   const renderStatusBadge = (status: SurveyStatus) => {
@@ -336,19 +367,47 @@ export const DashboardPage: React.FC = () => {
             )}
           </div>
 
-          <div className="flex items-center gap-2">
-            <Filter className="w-4 h-4 text-slate-400 hidden sm:block" />
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value as 'all' | SurveyStatus)}
-              className="rounded-lg border border-slate-300 bg-white py-2 px-3 text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-600 shadow-2xs"
-            >
-              <option value="all">Status: All</option>
-              <option value="draft">Draft</option>
-              <option value="active">Active</option>
-              <option value="closed">Closed</option>
-              <option value="archived">Archived</option>
-            </select>
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="flex items-center gap-1.5">
+              <Filter className="w-4 h-4 text-slate-400 hidden sm:block" />
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value as 'all' | SurveyStatus)}
+                className="rounded-lg border border-slate-300 bg-white py-2 px-3 text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-600 shadow-2xs"
+              >
+                <option value="all">Status: All</option>
+                <option value="draft">Draft</option>
+                <option value="active">Active</option>
+                <option value="closed">Closed</option>
+                <option value="archived">Archived</option>
+              </select>
+            </div>
+
+            <div className="flex items-center gap-1.5">
+              <Calendar className="w-4 h-4 text-slate-400 hidden sm:block" />
+              <select
+                value={dateFilter}
+                onChange={(e) => setDateFilter(e.target.value as 'all' | 'today' | 'week' | 'month')}
+                className="rounded-lg border border-slate-300 bg-white py-2 px-3 text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-600 shadow-2xs"
+              >
+                <option value="all">Date: All Time</option>
+                <option value="today">Created Today</option>
+                <option value="week">Past 7 Days</option>
+                <option value="month">Past 30 Days</option>
+              </select>
+            </div>
+
+            <div className="flex items-center gap-1.5">
+              <ArrowUpDown className="w-4 h-4 text-slate-400 hidden sm:block" />
+              <select
+                value={sortOrder}
+                onChange={(e) => setSortOrder(e.target.value as 'newest' | 'oldest')}
+                className="rounded-lg border border-slate-300 bg-white py-2 px-3 text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-600 shadow-2xs"
+              >
+                <option value="newest">Newest First</option>
+                <option value="oldest">Oldest First</option>
+              </select>
+            </div>
 
             <button
               onClick={fetchSurveys}
