@@ -56,20 +56,20 @@ This roadmap breaks the implementation into small, testable phases ordered from 
 
 # Phase 4 — Instructor Dashboard
 
-- [ ] Create the dashboard layout.
-- [ ] Load surveys from Supabase.
-- [ ] Display survey title, status, and creation date.
-- [ ] Add status badges for Draft, Active, Closed, and Archived.
-- [ ] Add a New Survey button.
-- [ ] Add Edit action.
-- [ ] Add Duplicate action.
-- [ ] Add Delete action.
-- [ ] Add Archive action.
-- [ ] Add View Results action.
-- [ ] Add Activate action.
-- [ ] Add Close action.
-- [ ] Add search by survey title.
-- [ ] Add filtering by status.
+- [x] Create the dashboard layout.
+- [x] Load surveys from Supabase.
+- [x] Display survey title, status, and creation date.
+- [x] Add status badges for Draft, Active, Closed, and Archived.
+- [x] Add a New Survey button.
+- [x] Add Edit action.
+- [x] Add Duplicate action.
+- [x] Add Delete action.
+- [x] Add Archive action.
+- [x] Add View Results action.
+- [x] Add Activate action.
+- [x] Add Close action.
+- [x] Add search by survey title.
+- [x] Add filtering by status.
 
 ---
 
