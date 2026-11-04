@@ -200,20 +200,20 @@ This roadmap breaks the implementation into small, testable phases ordered from 
 
 # Phase 14 — Testing
 
-- [ ] Test instructor login.
-- [ ] Test survey creation.
-- [ ] Test survey editing.
-- [ ] Test activation.
-- [ ] Test closing surveys.
-- [ ] Test QR-code links.
-- [ ] Test student submissions.
-- [ ] Test duplicate-submission prevention.
-- [ ] Test results calculations.
-- [ ] Test CSV export.
-- [ ] Test mobile layout.
-- [ ] Test with at least two browsers.
-- [ ] Test unauthorized access attempts.
-- [ ] Test database Row Level Security.
+- [x] Test instructor login.
+- [x] Test survey creation.
+- [x] Test survey editing.
+- [x] Test activation.
+- [x] Test closing surveys.
+- [x] Test QR-code links.
+- [x] Test student submissions.
+- [x] Test duplicate-submission prevention.
+- [x] Test results calculations.
+- [x] Test CSV export.
+- [x] Test mobile layout.
+- [x] Test with at least two browsers.
+- [x] Test unauthorized access attempts.
+- [x] Test database Row Level Security.
 
 ---
 
