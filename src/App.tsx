@@ -5,6 +5,7 @@ import { ProtectedRoute } from './components/ProtectedRoute'
 import { LandingPage } from './pages/LandingPage'
 import { LoginPage } from './pages/LoginPage'
 import { DashboardPage } from './pages/DashboardPage'
+import { SurveyEditorPage } from './pages/SurveyEditorPage'
 
 // Lightweight placeholder component for upcoming phases
 const PhasePlaceholder: React.FC<{ phaseName: string }> = ({ phaseName }) => {
@@ -58,7 +59,7 @@ export const App: React.FC = () => {
             path="/surveys/new"
             element={
               <ProtectedRoute>
-                <PhasePlaceholder phaseName="Phase 5: Survey Editor (New Survey)" />
+                <SurveyEditorPage />
               </ProtectedRoute>
             }
           />
@@ -66,7 +67,7 @@ export const App: React.FC = () => {
             path="/surveys/:id/edit"
             element={
               <ProtectedRoute>
-                <PhasePlaceholder phaseName="Phase 5: Survey Editor" />
+                <SurveyEditorPage />
               </ProtectedRoute>
             }
           />
