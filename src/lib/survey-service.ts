@@ -379,4 +379,98 @@ export const surveyService = {
       return { newId: null, error: message }
     }
   },
+
+  // 9. Fetch active survey for students by slug (or UUID)
+  async getActiveSurveyBySlug(slug: string): Promise<{
+    survey: Survey | null
+    questions: (Question & { choices: Choice[] })[] | null
+    notFound?: boolean
+    isClosed?: boolean
+    error: string | null
+  }> {
+    try {
+      const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug)
+
+      let query = supabase.from('surveys').select('*')
+      if (isUUID) {
+        query = query.or(`public_slug.eq.${slug},id.eq.${slug}`)
+      } else {
+        query = query.eq('public_slug', slug)
+      }
+
+      const { data: survey, error: sErr } = await query.maybeSingle()
+
+      if (sErr) {
+        return { survey: null, questions: null, error: sErr.message }
+      }
+
+      if (!survey) {
+        return { survey: null, questions: null, notFound: true, error: null }
+      }
+
+      if (survey.status !== 'active') {
+        return { survey, questions: null, isClosed: true, error: null }
+      }
+
+      // Fetch questions and choices
+      const { data: questions, error: qErr } = await supabase
+        .from('questions')
+        .select('*, choices(*)')
+        .eq('survey_id', survey.id)
+        .order('position', { ascending: true })
+
+      if (qErr) {
+        return { survey, questions: null, error: qErr.message }
+      }
+
+      const sortedQuestions = (questions || []).map((q) => ({
+        ...q,
+        choices: (q.choices || []).sort((a: Choice, b: Choice) => a.position - b.position),
+      }))
+
+      return { survey, questions: sortedQuestions, error: null }
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Failed to load survey.'
+      return { survey: null, questions: null, error: message }
+    }
+  },
+
+  // 10. Submit student survey answers
+  async submitStudentResponse(
+    surveyId: string,
+    anonymousToken: string,
+    answers: { question_id: string; choice_id?: string | null; text_answer?: string | null }[]
+  ): Promise<{ success: boolean; responseId?: string; error: string | null }> {
+    try {
+      const { data, error } = await supabase.rpc('submit_survey_response', {
+        p_survey_id: surveyId,
+        p_anonymous_token: anonymousToken,
+        p_answers: answers,
+      })
+
+      if (error) {
+        // Map database exception to friendly user message (API.md Section 10)
+        let friendlyMessage = error.message
+        if (error.message.includes('SURVEY_NOT_ACTIVE')) {
+          friendlyMessage = 'This survey is no longer accepting responses.'
+        } else if (error.message.includes('DUPLICATE_RESPONSE')) {
+          friendlyMessage = 'You have already submitted a response to this survey.'
+        } else if (error.message.includes('INVALID_QUESTION')) {
+          friendlyMessage = 'Invalid question specified in submission.'
+        } else if (error.message.includes('INVALID_CHOICE')) {
+          friendlyMessage = 'Invalid choice selected.'
+        }
+        return { success: false, error: friendlyMessage }
+      }
+
+      return {
+        success: true,
+        responseId: data?.response_id,
+        error: null,
+      }
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Submission failed.'
+      return { success: false, error: message }
+    }
+  },
 }

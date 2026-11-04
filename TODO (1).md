@@ -111,18 +111,18 @@ This roadmap breaks the implementation into small, testable phases ordered from 
 
 # Phase 7 — Student Survey Page
 
-- [ ] Create the public route `/s/:slug`.
-- [ ] Load the requested active survey.
-- [ ] Show an error if the survey does not exist.
-- [ ] Show a message if the survey is closed.
-- [ ] Render survey title and description.
-- [ ] Render Multiple Choice questions.
-- [ ] Render True / False questions.
-- [ ] Validate required answers.
-- [ ] Add Submit button.
-- [ ] Store response and answers in Supabase.
-- [ ] Show a submission confirmation page.
-- [ ] Make the entire experience mobile friendly.
+- [x] Create the public route `/s/:slug`.
+- [x] Load the requested active survey.
+- [x] Show an error if the survey does not exist.
+- [x] Show a message if the survey is closed.
+- [x] Render survey title and description.
+- [x] Render Multiple Choice questions.
+- [x] Render True / False questions.
+- [x] Validate required answers.
+- [x] Add Submit button.
+- [x] Store response and answers in Supabase.
+- [x] Show a submission confirmation page.
+- [x] Make the entire experience mobile friendly.
 
 ---
 
