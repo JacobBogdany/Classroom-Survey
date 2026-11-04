@@ -6,6 +6,7 @@ import { LandingPage } from './pages/LandingPage'
 import { LoginPage } from './pages/LoginPage'
 import { DashboardPage } from './pages/DashboardPage'
 import { SurveyEditorPage } from './pages/SurveyEditorPage'
+import { PresentPage } from './pages/PresentPage'
 
 // Lightweight placeholder component for upcoming phases
 const PhasePlaceholder: React.FC<{ phaseName: string }> = ({ phaseName }) => {
@@ -75,7 +76,7 @@ export const App: React.FC = () => {
             path="/surveys/:id/present"
             element={
               <ProtectedRoute>
-                <PhasePlaceholder phaseName="Phase 6: Present Survey (Classroom Projector)" />
+                <PresentPage />
               </ProtectedRoute>
             }
           />
