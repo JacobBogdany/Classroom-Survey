@@ -186,15 +186,15 @@ This roadmap breaks the implementation into small, testable phases ordered from 
 
 # Phase 13 — UI Polish
 
-- [ ] Add consistent page layouts.
-- [ ] Improve mobile responsiveness.
-- [ ] Add loading states.
-- [ ] Add empty states.
-- [ ] Add error messages.
-- [ ] Add confirmation dialogs for destructive actions.
-- [ ] Improve QR-code presentation for classroom projection.
-- [ ] Test accessibility and keyboard navigation.
-- [ ] Improve color contrast.
+- [x] Add consistent page layouts.
+- [x] Improve mobile responsiveness.
+- [x] Add loading states.
+- [x] Add empty states.
+- [x] Add error messages.
+- [x] Add confirmation dialogs for destructive actions.
+- [x] Improve QR-code presentation for classroom projection.
+- [x] Test accessibility and keyboard navigation.
+- [x] Improve color contrast.
 
 ---
 

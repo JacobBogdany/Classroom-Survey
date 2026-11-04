@@ -1,7 +1,22 @@
 @import "tailwindcss";
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+  }
+
   body {
     @apply bg-slate-50 text-slate-900 antialiased min-h-screen font-sans;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Universal accessible focus indicators */
+  :focus-visible {
+    @apply outline-none ring-2 ring-indigo-600 ring-offset-2 ring-offset-white;
+  }
+
+  button, input, select, textarea, a {
+    touch-action: manipulation;
   }
 }

@@ -50,6 +50,7 @@ export const LoginPage: React.FC = () => {
             to="/"
             className="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-sm hover:bg-indigo-700 transition-colors"
             title="Classroom Survey Home"
+            aria-label="Classroom Survey Home"
           >
             <BarChart3 className="w-6 h-6" />
           </Link>

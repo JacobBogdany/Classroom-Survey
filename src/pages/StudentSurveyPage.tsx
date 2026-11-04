@@ -269,7 +269,7 @@ export const StudentSurveyPage: React.FC = () => {
                     return (
                       <label
                         key={choice.id}
-                        className={`flex items-center min-h-[48px] px-4 py-3 rounded-xl border text-sm sm:text-base cursor-pointer select-none transition-all active:scale-[0.99] ${
+                        className={`flex items-center min-h-[48px] px-4 py-3 rounded-xl border text-sm sm:text-base cursor-pointer select-none transition-all active:scale-[0.99] has-focus-visible:ring-2 has-focus-visible:ring-indigo-600 has-focus-visible:ring-offset-2 ${
                           isSelected
                             ? 'bg-indigo-50/80 border-indigo-600 text-indigo-950 font-semibold shadow-xs ring-1 ring-indigo-600'
                             : 'bg-white border-slate-200 hover:border-slate-300 hover:bg-slate-50/80 text-slate-800'

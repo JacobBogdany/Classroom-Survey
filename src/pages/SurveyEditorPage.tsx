@@ -582,6 +582,7 @@ export const SurveyEditorPage: React.FC = () => {
                       onClick={() => moveQuestion(qIndex, 'up')}
                       className="p-1 rounded text-slate-400 hover:text-slate-700 hover:bg-slate-100 disabled:opacity-30 disabled:hover:bg-transparent"
                       title="Move Question Up"
+                      aria-label={`Move question ${qIndex + 1} up`}
                     >
                       <ChevronUp className="w-4 h-4" />
                     </button>
@@ -591,6 +592,7 @@ export const SurveyEditorPage: React.FC = () => {
                       onClick={() => moveQuestion(qIndex, 'down')}
                       className="p-1 rounded text-slate-400 hover:text-slate-700 hover:bg-slate-100 disabled:opacity-30 disabled:hover:bg-transparent"
                       title="Move Question Down"
+                      aria-label={`Move question ${qIndex + 1} down`}
                     >
                       <ChevronDown className="w-4 h-4" />
                     </button>
@@ -603,6 +605,7 @@ export const SurveyEditorPage: React.FC = () => {
                       onClick={() => removeQuestion(qIndex)}
                       className="p-1 rounded text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors"
                       title="Delete Question"
+                      aria-label={`Delete question ${qIndex + 1}`}
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -710,6 +713,7 @@ export const SurveyEditorPage: React.FC = () => {
                                 onClick={() => moveChoice(qIndex, cIndex, 'up')}
                                 className="p-1 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded disabled:opacity-20"
                                 title="Move Choice Up"
+                                aria-label={`Move choice ${letter} up for question ${qIndex + 1}`}
                               >
                                 <ChevronUp className="w-3.5 h-3.5" />
                               </button>
@@ -719,6 +723,7 @@ export const SurveyEditorPage: React.FC = () => {
                                 onClick={() => moveChoice(qIndex, cIndex, 'down')}
                                 className="p-1 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded disabled:opacity-20"
                                 title="Move Choice Down"
+                                aria-label={`Move choice ${letter} down for question ${qIndex + 1}`}
                               >
                                 <ChevronDown className="w-3.5 h-3.5" />
                               </button>
@@ -728,6 +733,7 @@ export const SurveyEditorPage: React.FC = () => {
                                 onClick={() => removeChoice(qIndex, cIndex)}
                                 className="p-1 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded disabled:opacity-20 transition-colors"
                                 title="Remove Choice"
+                                aria-label={`Remove choice ${letter} for question ${qIndex + 1}`}
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
                               </button>

@@ -198,6 +198,7 @@ export const PresentPage: React.FC = () => {
             to="/dashboard"
             className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
             title="Back to Dashboard"
+            aria-label="Back to Dashboard"
           >
             <ArrowLeft className="w-5 h-5" />
           </Link>
@@ -211,6 +212,7 @@ export const PresentPage: React.FC = () => {
             onClick={toggleFullscreen}
             className="p-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
             title={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen Presentation'}
+            aria-label={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen Presentation'}
           >
             {isFullscreen ? <Minimize2 className="w-5 h-5" /> : <Maximize2 className="w-5 h-5" />}
           </button>
@@ -271,6 +273,7 @@ export const PresentPage: React.FC = () => {
             onClick={() => handleCopyUrl(fullUrl)}
             className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
             title="Copy URL"
+            aria-label={copied ? 'URL Copied' : 'Copy survey join URL'}
           >
             {copied ? <Check className="w-5 h-5 text-emerald-400" /> : <Copy className="w-5 h-5" />}
           </button>

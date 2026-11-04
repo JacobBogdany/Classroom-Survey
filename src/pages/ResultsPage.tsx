@@ -134,6 +134,7 @@ export const ResultsPage: React.FC = () => {
               to="/dashboard"
               className="p-1.5 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors"
               title="Back to Dashboard"
+              aria-label="Back to Dashboard"
             >
               <ArrowLeft className="w-5 h-5" />
             </Link>
@@ -153,6 +154,7 @@ export const ResultsPage: React.FC = () => {
               disabled={refreshing}
               className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold text-slate-700 bg-white border border-slate-300 hover:bg-slate-50 disabled:opacity-50 transition-colors shadow-2xs"
               title="Refresh Results"
+              aria-label="Refresh Results"
             >
               <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
               <span className="hidden sm:inline">Refresh</span>
@@ -171,6 +173,7 @@ export const ResultsPage: React.FC = () => {
               disabled={total_responses === 0 || exportingCSV}
               className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold text-slate-700 bg-white border border-slate-300 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors shadow-2xs"
               title="Export CSV"
+              aria-label="Export results to CSV"
             >
               <Download className={`w-4 h-4 ${exportingCSV ? 'animate-bounce' : ''}`} />
               <span className="hidden sm:inline">

@@ -131,7 +131,7 @@ export const DashboardPage: React.FC = () => {
     switch (status) {
       case 'active':
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
             Active
           </span>
@@ -144,13 +144,13 @@ export const DashboardPage: React.FC = () => {
         )
       case 'closed':
         return (
-          <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
+          <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-800 border border-blue-200">
             Closed
           </span>
         )
       case 'archived':
         return (
-          <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200">
+          <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-800 border border-amber-200">
             Archived
           </span>
         )
@@ -318,6 +318,7 @@ export const DashboardPage: React.FC = () => {
               onClick={handleLogout}
               className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs sm:text-sm font-medium text-slate-700 hover:text-red-600 hover:bg-red-50 border border-slate-200 transition-colors"
               title="Logout"
+              aria-label="Logout"
             >
               <LogOut className="w-4 h-4" />
               <span className="hidden sm:inline">Logout</span>
@@ -361,6 +362,7 @@ export const DashboardPage: React.FC = () => {
               <button
                 onClick={() => setSearchQuery('')}
                 className="absolute inset-y-0 right-0 pr-3 flex items-center text-xs text-slate-400 hover:text-slate-600"
+                aria-label="Clear search input"
               >
                 Clear
               </button>
@@ -373,6 +375,7 @@ export const DashboardPage: React.FC = () => {
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value as 'all' | SurveyStatus)}
+                aria-label="Filter by status"
                 className="rounded-lg border border-slate-300 bg-white py-2 px-3 text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-600 shadow-2xs"
               >
                 <option value="all">Status: All</option>
@@ -388,6 +391,7 @@ export const DashboardPage: React.FC = () => {
               <select
                 value={dateFilter}
                 onChange={(e) => setDateFilter(e.target.value as 'all' | 'today' | 'week' | 'month')}
+                aria-label="Filter by date"
                 className="rounded-lg border border-slate-300 bg-white py-2 px-3 text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-600 shadow-2xs"
               >
                 <option value="all">Date: All Time</option>
@@ -402,6 +406,7 @@ export const DashboardPage: React.FC = () => {
               <select
                 value={sortOrder}
                 onChange={(e) => setSortOrder(e.target.value as 'newest' | 'oldest')}
+                aria-label="Sort order"
                 className="rounded-lg border border-slate-300 bg-white py-2 px-3 text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-600 shadow-2xs"
               >
                 <option value="newest">Newest First</option>
@@ -414,6 +419,7 @@ export const DashboardPage: React.FC = () => {
               disabled={loading}
               className="p-2 rounded-lg border border-slate-300 bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors shadow-2xs disabled:opacity-50"
               title="Refresh Survey List"
+              aria-label="Refresh Survey List"
             >
               <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
             </button>
@@ -611,6 +617,7 @@ export const DashboardPage: React.FC = () => {
                       disabled={actionLoading}
                       className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 transition-colors"
                       title="Duplicate survey"
+                      aria-label={`Duplicate survey ${survey.title}`}
                     >
                       <Copy className="w-3.5 h-3.5" />
                       <span className="hidden sm:inline">Duplicate</span>
@@ -621,6 +628,7 @@ export const DashboardPage: React.FC = () => {
                         onClick={() => triggerArchive(survey)}
                         className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-700 bg-white border border-slate-200 hover:bg-amber-50 hover:text-amber-700 transition-colors"
                         title="Archive survey"
+                        aria-label={`Archive survey ${survey.title}`}
                       >
                         <Archive className="w-3.5 h-3.5" />
                         <span className="hidden sm:inline">Archive</span>
@@ -631,6 +639,7 @@ export const DashboardPage: React.FC = () => {
                       onClick={() => triggerDelete(survey)}
                       className="inline-flex items-center gap-1.5 p-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-red-600 hover:bg-red-50 border border-slate-200 transition-colors"
                       title="Delete survey"
+                      aria-label={`Delete survey ${survey.title}`}
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
