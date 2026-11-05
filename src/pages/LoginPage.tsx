@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { useAuth } from '../context/useAuth'
-import { BarChart3, AlertCircle, ArrowLeft } from 'lucide-react'
+import { BarChart3, AlertCircle, ArrowLeft, Sparkles } from 'lucide-react'
 
 export const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
+  const [demoLoading, setDemoLoading] = useState(false)
 
   const { user, signIn } = useAuth()
   const navigate = useNavigate()
@@ -36,6 +37,29 @@ export const LoginPage: React.FC = () => {
 
     if (res.error) {
       setError(res.error)
+    } else {
+      const from = (location.state as { from?: { pathname: string } })?.from?.pathname || '/dashboard'
+      navigate(from, { replace: true })
+    }
+  }
+
+  // One-click demo login for evaluators / testing
+  const handleDemoLogin = async () => {
+    setError(null)
+    const demoEmail = import.meta.env.VITE_DEMO_EMAIL
+    const demoPassword = import.meta.env.VITE_DEMO_PASSWORD
+
+    if (!demoEmail || !demoPassword) {
+      setError('Demo credentials are not configured in VITE_DEMO_EMAIL and VITE_DEMO_PASSWORD environment variables.')
+      return
+    }
+
+    setDemoLoading(true)
+    const res = await signIn(demoEmail.trim(), demoPassword)
+    setDemoLoading(false)
+
+    if (res.error) {
+      setError(`Demo login failed: ${res.error}`)
     } else {
       const from = (location.state as { from?: { pathname: string } })?.from?.pathname || '/dashboard'
       navigate(from, { replace: true })
@@ -115,12 +139,41 @@ export const LoginPage: React.FC = () => {
 
             <button
               type="submit"
-              disabled={submitting}
+              disabled={submitting || demoLoading}
               className="w-full flex justify-center items-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
             >
               {submitting ? 'Signing in...' : 'Log In'}
             </button>
           </form>
+
+          {/* Quick Demo Login Option */}
+          <div className="mt-6">
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-slate-200" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-white px-2.5 text-slate-500 font-medium tracking-wider">
+                  Or test with demo access
+                </span>
+              </div>
+            </div>
+
+            <div className="mt-4">
+              <button
+                type="button"
+                onClick={handleDemoLogin}
+                disabled={submitting || demoLoading}
+                className="w-full flex justify-center items-center gap-2 py-2.5 px-4 border border-indigo-200 rounded-lg shadow-2xs text-sm font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100/80 active:bg-indigo-200/60 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-60 disabled:cursor-not-allowed transition-all"
+              >
+                <Sparkles className="w-4 h-4 text-indigo-600 shrink-0" />
+                <span>{demoLoading ? 'Logging in as Demo Instructor...' : 'Log In as Demo Instructor'}</span>
+              </button>
+              <p className="mt-1.5 text-center text-2xs text-slate-400">
+                Instantly explore the instructor dashboard without typing credentials.
+              </p>
+            </div>
+          </div>
 
           <div className="mt-6 pt-6 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
             <Link
