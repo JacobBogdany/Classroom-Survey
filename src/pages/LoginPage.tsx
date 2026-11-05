@@ -46,13 +46,8 @@ export const LoginPage: React.FC = () => {
   // One-click demo login for evaluators / testing
   const handleDemoLogin = async () => {
     setError(null)
-    const demoEmail = import.meta.env.VITE_DEMO_EMAIL
-    const demoPassword = import.meta.env.VITE_DEMO_PASSWORD
-
-    if (!demoEmail || !demoPassword) {
-      setError('Demo credentials are not configured in VITE_DEMO_EMAIL and VITE_DEMO_PASSWORD environment variables.')
-      return
-    }
+    const demoEmail = import.meta.env.VITE_DEMO_EMAIL || 'jacob.bogdany@uconn.edu'
+    const demoPassword = import.meta.env.VITE_DEMO_PASSWORD || 'bub'
 
     setDemoLoading(true)
     const res = await signIn(demoEmail.trim(), demoPassword)
