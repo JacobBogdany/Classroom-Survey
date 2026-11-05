@@ -7,6 +7,8 @@ import {
   type EditableChoice,
 } from '../lib/survey-service'
 import { ConfirmModal } from '../components/ConfirmModal'
+import { ImportModal } from '../components/ImportModal'
+import { exportSurveyToJSON, type SurveyImportData } from '../lib/survey-import-export'
 import type { QuestionType } from '../types/database'
 import {
   ArrowLeft,
@@ -22,6 +24,8 @@ import {
   ListFilter,
   CheckSquare,
   Copy,
+  Upload,
+  Download,
 } from 'lucide-react'
 
 export const SurveyEditorPage: React.FC = () => {
@@ -36,6 +40,7 @@ export const SurveyEditorPage: React.FC = () => {
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
   const [isActiveSurvey, setIsActiveSurvey] = useState(false)
   const [responseCount, setResponseCount] = useState(0)
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false)
 
   // Survey Data Form State
   const [title, setTitle] = useState('')
@@ -249,6 +254,30 @@ export const SurveyEditorPage: React.FC = () => {
     })
   }
 
+  // Phase 16: Export survey structure to JSON file
+  const handleExportJSON = () => {
+    const jsonStr = exportSurveyToJSON(title, description, questions)
+    const blob = new Blob([jsonStr], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    const safeTitle = (title || 'survey').replace(/[^a-z0-9]/gi, '_').toLowerCase()
+    a.download = `${safeTitle}.json`
+    a.href = url
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+  }
+
+  // Phase 16: Apply parsed survey data from ImportModal
+  const handleApplyImport = (data: SurveyImportData) => {
+    if (data.title) setTitle(data.title)
+    if (data.description !== undefined) setDescription(data.description)
+    if (data.questions.length > 0) {
+      setQuestions(data.questions)
+    }
+  }
+
   const moveChoice = (qIndex: number, cIndex: number, direction: 'up' | 'down') => {
     setQuestions((prev) => {
       const updated = [...prev]
@@ -403,12 +432,36 @@ export const SurveyEditorPage: React.FC = () => {
           </div>
 
           <div className="flex items-center space-x-2 sm:space-x-3">
+            {!isActiveSurvey && (
+              <button
+                type="button"
+                onClick={() => setIsImportModalOpen(true)}
+                disabled={saving}
+                className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold text-slate-700 bg-white border border-slate-300 hover:bg-slate-50 transition-colors shadow-2xs"
+                title="Import from Markdown or JSON"
+              >
+                <Upload className="w-4 h-4 text-indigo-600" />
+                <span className="hidden md:inline">Import</span>
+              </button>
+            )}
+
+            <button
+              type="button"
+              onClick={handleExportJSON}
+              disabled={saving}
+              className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold text-slate-700 bg-white border border-slate-300 hover:bg-slate-50 transition-colors shadow-2xs"
+              title="Export Survey to JSON"
+            >
+              <Download className="w-4 h-4 text-slate-500" />
+              <span className="hidden md:inline">Export JSON</span>
+            </button>
+
             {isEditing && id && (
               <button
                 type="button"
                 onClick={handleDuplicate}
                 disabled={saving}
-                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold text-slate-700 bg-white border border-slate-300 hover:bg-slate-50 transition-colors shadow-2xs disabled:opacity-50"
+                className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold text-slate-700 bg-white border border-slate-300 hover:bg-slate-50 transition-colors shadow-2xs disabled:opacity-50"
                 title="Duplicate Survey"
               >
                 <Copy className="w-4 h-4 text-slate-500" />
@@ -822,6 +875,13 @@ export const SurveyEditorPage: React.FC = () => {
           }
         }}
         onCancel={() => setModalConfig((prev) => ({ ...prev, isOpen: false }))}
+      />
+
+      {/* Phase 16: Markdown & JSON Import Modal */}
+      <ImportModal
+        isOpen={isImportModalOpen}
+        onClose={() => setIsImportModalOpen(false)}
+        onImport={handleApplyImport}
       />
     </div>
   )

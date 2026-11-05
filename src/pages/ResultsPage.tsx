@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { useParams, Link } from 'react-router-dom'
+import { supabase } from '../lib/supabase'
 import {
   surveyService,
   type SurveyResultsData,
@@ -34,6 +35,7 @@ export const ResultsPage: React.FC = () => {
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [isLiveActive, setIsLiveActive] = useState(false)
 
   const loadResults = useCallback(async (isManualRefresh = false) => {
     if (!id) return
@@ -53,6 +55,7 @@ export const ResultsPage: React.FC = () => {
     setRefreshing(false)
   }, [id])
 
+  // 1. Initial Load
   useEffect(() => {
     let ignore = false
     if (!id) return
@@ -73,6 +76,34 @@ export const ResultsPage: React.FC = () => {
       ignore = true
     }
   }, [id])
+
+  // 2. Realtime WebSocket subscription for live-updating charts (Phase 16)
+  useEffect(() => {
+    if (!id) return
+
+    const channel = supabase
+      .channel(`results-live-${id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'responses',
+          filter: `survey_id=eq.${id}`,
+        },
+        () => {
+          // Instantly refresh analytics upon new student submission
+          loadResults(false)
+        }
+      )
+      .subscribe((status) => {
+        setIsLiveActive(status === 'SUBSCRIBED')
+      })
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [id, loadResults])
 
   const [exportingCSV, setExportingCSV] = useState(false)
 
@@ -149,6 +180,13 @@ export const ResultsPage: React.FC = () => {
           </div>
 
           <div className="flex items-center space-x-2 sm:space-x-3">
+            {isLiveActive && (
+              <span className="hidden md:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                Live Realtime
+              </span>
+            )}
+
             <button
               onClick={() => loadResults(true)}
               disabled={refreshing}

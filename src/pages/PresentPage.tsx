@@ -60,11 +60,11 @@ export const PresentPage: React.FC = () => {
     }
   }, [id])
 
-  // 2. Poll for live response count every 3 seconds while active
+  // 2. Realtime WebSocket subscription + 3s polling fallback for instant response updates
   useEffect(() => {
     if (!id || survey?.status !== 'active') return
 
-    const interval = setInterval(async () => {
+    const fetchLatestCount = async () => {
       try {
         const { count, error } = await supabase
           .from('responses')
@@ -75,11 +75,34 @@ export const PresentPage: React.FC = () => {
           setResponseCount(count)
         }
       } catch (err) {
-        console.error('Polling response count error:', err)
+        console.error('Response count fetch error:', err)
       }
-    }, 3000)
+    }
 
-    return () => clearInterval(interval)
+    // A. Supabase Realtime channel
+    const channel = supabase
+      .channel(`present-responses-${id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'responses',
+          filter: `survey_id=eq.${id}`,
+        },
+        () => {
+          fetchLatestCount()
+        }
+      )
+      .subscribe()
+
+    // B. Periodic fallback
+    const interval = setInterval(fetchLatestCount, 3000)
+
+    return () => {
+      clearInterval(interval)
+      supabase.removeChannel(channel)
+    }
   }, [id, survey?.status])
 
   // 3. Close Survey
